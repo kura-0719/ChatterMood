@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ChatterMood</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #007bff;
+            margin-top: 20px;
+        }
+        p {
+            color: #007bff;
+            width: 75%;
+            margin: 0 auto;
+            margin-bottom: 60px;
+        }
+        .logout-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        a {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            margin: 10px;
+            text-decoration: none;
+        }
+        a:hover {
+            background-color: #0056b3;
+        }
+        label {
+            display: block;
+            margin: 20px 0 10px;
+        }
+        select {
+            width: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+  </head>
+  <body>
+    <h1>ChatterMood</h1>
+    <!-- <p>ChatterMoodは、会話を楽しむ新しい方法を提供するチャットアプリです。<br>今のあなたの気分に合わせて対話モードを変更させてください。ChatterMoodが楽しい会話を提供します。</p> -->
+
+    <a href="/logout" role="button" class="logout-button">ログアウト</a>
+
+    <!-- モード選択フォーム -->
+    <label for="messageType">モードを選択してください:</label>
+    <select id="messageType">
+        <option value="">-</option>
+        <option value="">-</option>
+        <option value="normal">ため口モード</option>
+        <option value="polite">丁寧モード</option>
+        <option value="pyon">ぴょんモード</option>
+        <option value="kao">顔文字モード</option>
+        <option value="exclamation">!?!?モード</option>
+    </select>
+      <button onclick="redirectToSelectedOption()">開始</button>
+    <script>
+        function redirectToSelectedOption() {
+            var selectElement = document.getElementById("messageType");
+            var selectedOption = selectElement.options[selectElement.selectedIndex].value;
+
+            if (selectedOption === "normal") {
+                window.location.href = "/normal";
+            } else if (selectedOption === "polite") {
+                window.location.href = "/polite";
+            } else if (selectedOption === "pyon") {
+                window.location.href = "/pyon";
+            } else if (selectedOption === "kao") {
+                window.location.href = "/kao";
+            } else if (selectedOption === "exclamation") {
+                window.location.href = "/exclamation";
+            }
+        }
+    </script>
+</body>
+</html>

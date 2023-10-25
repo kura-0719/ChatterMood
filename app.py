@@ -69,10 +69,14 @@ def write_chat_log(log_filename,  user_message, bot_response):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-@app.route("/")
-@login_required
+@app.route('/')
 def home():
     return render_template("index.html")
+
+@app.route('/mode')
+@login_required
+def mode():
+    return render_template("mode.html")
 
 @app.route("/signup",  methods=['GET', 'POST'])
 def signup():
@@ -97,7 +101,7 @@ def login():
         user = User.query.filter_by(username=username).first()
         if check_password_hash(user.password, password):
             login_user(user)
-            return redirect('/')
+            return redirect('/mode')
         # 例外処理
 
     else:
