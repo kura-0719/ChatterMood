@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ChatterMood</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+      }
+      h1 {
+        color: #007bff;
+      }
+      #chat-box {
+        background-color: #7494C0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 15px 15px 80px 15px;
+        margin: 20px auto 40px;
+        max-width: 800px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        text-align: left;
+      }
+      .message {
+        margin: 10px 0;
+        clear: both;
+      }
+      .user-message {
+        background-color: #8DE055;
+        color: #000;
+        border-radius: 5px;
+        padding: 10px;
+        float: right; 
+        max-width: 60%;
+      }
+      .bot-message {
+        background-color: #eee;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        float: left;
+        max-width: 60%;
+        display: flex; 
+        align-items: center; 
+      }
+      form {
+        background-color: #f5f5f5;
+        padding: 15px;
+        border-radius: 5px;
+        max-width: 600px;
+        margin: 0 auto;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      #message-input {
+        width: 70%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+      }
+      .logout-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+      }
+      a {
+        display: inline-block;
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 3px;
+        margin: 10px;
+        text-decoration: none;
+      }
+      a:hover {
+        background-color: #0056b3;
+      }
+      button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .icon img {
+        width: 30px; 
+        height: 30px; 
+        margin-right: 8px; 
+      }
+      form {
+        position: fixed; 
+        bottom: 4%;
+        left: 0; 
+        right: 0;
+        width: 100%; 
+        padding: 10px; 
+        background-color: #f5f5f5; 
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); 
+      }
+      #message-input {
+        width: 80%; 
+        padding: 5px; 
+        border: none; 
+      }
+      button[type="submit"] {
+        background-color: #007bff; 
+        color: #fff; 
+        border: none; 
+        padding: 5px 10px; 
+        cursor: pointer; 
+      }
+      .nav {
+        display: flex;
+        background-color: #333;
+        padding: 10px;
+      }
+      .nav a {
+        color: #fff;
+        text-decoration: none;
+        margin: 0 8px;
+        font-size: 16px;
+      }
+      .nav a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="nav">
+      <a href="/normal">ため口モード</a>
+      <a href="/polite">丁寧モード</a>
+      <a href="/pyon">ぴょんモード</a>
+      <a href="/exclamation">!?!?モード</a>
+      <a href="/logout" role="button" class="logout-button">ログアウト</a>
+    </div>
+    <h1>顔文字モード</h1>
+
+    <div id="chat-box">
+      {% for message in chat_messages %}
+      <div class="message">
+        <div class="user-message">
+          <strong>{{ user_name }}:</strong> {{ message.user }}
+        </div>
+      </div>
+      <div class="message">
+        <div class="bot-message">
+          <div class="icon">
+            <img src="../static/img/kao.png" alt="" />
+          </div>
+          <!-- <strong>ボット:</strong>  -->
+          {{ message.bot }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <form method="POST" action="/kao">
+      <input
+        type="text"
+        id="message-input"
+        name="message"
+        placeholder="メッセージを入力..."
+      />
+      <button type="submit">送信</button>
+    </form>
+
+    <script>
+      function sendMessage() {
+        // ユーザーが入力したメッセージを取得
+        var messageInput = document.getElementById("message-input");
+        var message = messageInput.value;
+
+        // チャットメッセージを表示するための新しい要素を作成
+        var messageElement = document.createElement("div");
+        messageElement.className = "message";
+        messageElement.innerHTML =
+          '<div class="user-message">' + message + "</div>";
+
+        // チャットボックスにユーザーのメッセージを追加
+        var chatBox = document.getElementById("chat-box");
+        chatBox.appendChild(messageElement);
+
+        // メッセージ入力欄をクリア
+        messageInput.value = "";
+
+        // ユーザーのメッセージをサーバーに送信
+        fetch("/send_message", {
+          method: "POST",
+          body: new URLSearchParams({ message: message }),
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // ボットからの返信を表示
+            var botResponse = data.bot_response;
+            var botResponseElement = document.createElement("div");
+            botResponseElement.className = "message";
+            botResponseElement.innerHTML =
+              '<div class="bot-message">' + botResponse + "</div>";
+            chatBox.appendChild(botResponseElement);
+          });
+      }
+
+      var chatForm = document.getElementById("chat-form");
+      chatForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        sendMessage();
+      });
+    </script>
+</body>
+</html> 
