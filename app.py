@@ -57,13 +57,13 @@ def load_patterns(pattern_file_path):
 # パターンと応答を読み込む
 patterns = load_patterns(pattern_file_path)
 
-def write_chat_log(log_filename,  user_message, bot_response):
-    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    with open(log_filename, 'a', encoding='utf-8') as file:
-        file.write(f"{timestamp}\n")
-        file.write(f"User: {user_message}\n")
-        file.write(f"Bot: {bot_response}\n")
-        file.write("\n")
+# def write_chat_log(log_filename,  user_message, bot_response):
+#     timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#     with open(log_filename, 'a', encoding='utf-8') as file:
+#         file.write(f"{timestamp}\n")
+#         file.write(f"User: {user_message}\n")
+#         file.write(f"Bot: {bot_response}\n")
+#         file.write("\n")
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -175,7 +175,7 @@ def polite_page():
         chat_messages_polite.append({'user': user_message, 'bot': response})
 
         # チャットログとしてファイルに書き込む
-        write_chat_log('polite.txt', user_message, response)
+        # write_chat_log('polite.txt', user_message, response)
     user_name = current_user.username
     return render_template('polite.html', chat_messages=chat_messages_polite, user_name=user_name)
 
@@ -216,7 +216,7 @@ def pyon_page():
         chat_messages_pyon.append({'user': user_message, 'bot': response})
 
         # チャットログとしてファイルに書き込む
-        write_chat_log('pyon.txt', user_message, response)
+        # write_chat_log('pyon.txt', user_message, response)
     user_name = current_user.username
     return render_template('pyon.html', chat_messages=chat_messages_pyon, user_name=user_name)
 
@@ -257,7 +257,7 @@ def kao_page():
         chat_messages_kao.append({'user': user_message, 'bot': response})
 
         # チャットログとしてファイルに書き込む
-        write_chat_log('kao.txt', user_message, response)
+        # write_chat_log('kao.txt', user_message, response)
     user_name = current_user.username
     return render_template('kao.html', chat_messages=chat_messages_kao, user_name=user_name)
 
@@ -311,7 +311,7 @@ def exclamation_page():
         db.session.commit()
 
         # メッセージをチャットメッセージリストに追加
-        chat_messages_exclamation.append({'user': user_message, 'bot': response})
+        # chat_messages_exclamation.append({'user': user_message, 'bot': response})
 
         # チャットログとしてファイルに書き込む
         write_chat_log('exclamation.txt', user_message, response)
