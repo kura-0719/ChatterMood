@@ -140,7 +140,7 @@ def normal_page():
         chat_messages_normal.append({'user': user_message, 'bot': response})
 
         # チャットログとしてファイルに書き込む
-        write_chat_log('normal.txt', user_message, response)
+        # write_chat_log('normal.txt', user_message, response)
     user_name = current_user.username
     return render_template('normal.html', chat_messages=chat_messages_normal, user_name=user_name)
 
