@@ -3,11 +3,21 @@ from flask_login import UserMixin, LoginManager, login_user, login_required, log
 from flask_sqlalchemy import SQLAlchemy
 import os
 
+import pyttsx3
+
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import re
 import random
 import datetime  # ログのタイムスタンプに使用
+
+
+# 音声合成エンジンの初期化
+engine = pyttsx3.init()
+
+# 音声の設定
+engine.setProperty("voice", "ja-JP")
+engine.setProperty("rate", 120)
 
 
 app = Flask(__name__, static_url_path='/static')
@@ -120,6 +130,17 @@ chat_messages_pyon = []
 chat_messages_kao = []
 chat_messages_exclamation = []
 
+# 音声応答を生成
+def generate_voice_response(response):
+    global engine
+    if engine is None:
+        engine = pyttsx3.init()
+        engine.setProperty("voice", "ja-JP")
+        engine.setProperty("rate", 120)
+
+    engine.say(response)
+    engine.runAndWait()
+
 @app.route('/normal', methods=['GET', 'POST'])
 @login_required
 def normal_page():
@@ -139,6 +160,18 @@ def normal_page():
         # メッセージをチャットメッセージリストに追加
         chat_messages_normal.append({'user': user_message, 'bot': response})
 
+        # 音声応答を生成
+        global engine
+        if engine is not None:
+            engine.stop()
+            engine = None
+
+        engine = pyttsx3.init()
+        engine.setProperty("voice", "ja-JP")
+        engine.setProperty("rate", 150)
+        engine.say(response)
+        engine.runAndWait()
+
         # チャットログとしてファイルに書き込む
         # write_chat_log('normal.txt', user_message, response)
     user_name = current_user.username
@@ -147,14 +180,20 @@ def normal_page():
 # ユーザーの入力に応じた応答を生成する関数
 def normal_response(user_message, patterns):
     for pattern in patterns:
-        match = re.search(pattern['pattern'], user_message)
+        try:
+            match = re.search(pattern['pattern'], user_message)
+        except re.error:
+            continue
+
         if match:
             responses = pattern['responses']
-            response = random.choice(responses)  # 応答をランダムに選択
-            if '%s' in response and match.groups():
-                response = response % match.group(1)  # 応答内の %s をマッチしたグループで置換
+            response = random.choice(responses)
+
+            if '{0}' in response and match.groups():
+                response = response.replace('{0}', match.group(1))
             return response
-    return "どういう意味？"
+
+    return "なんと申しました？"
 
 @app.route('/polite', methods=['GET', 'POST'])
 @login_required
